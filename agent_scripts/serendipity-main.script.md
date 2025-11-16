@@ -8,6 +8,7 @@ This script orchestrates the serendipity event finding process by coordinating s
 
 - **parameters_file** (required): Path to file containing websites, interests, and local_area
 - **output_directory** (required): Directory path where result files will be saved
+- **results_file** (optional): Custom filename for results (defaults to serendipity-results-yyyy-mm-dd.md)
 
 ## Steps
 
@@ -61,7 +62,7 @@ Read extracted events and create the final formatted report.
 **Constraints:**
 
 - You MUST read the events_file to get all discovered events
-- You MUST create "serendipity-results-yyyy-mm-dd.md" using current date
+- You MUST create the results file using the provided results_file parameter if specified, otherwise use "serendipity-results-yyyy-mm-dd.md" format with current date
 - You MUST organize events chronologically by date
 - You MUST include summary statistics by interest category
 - You MUST clean up temporary files (url-queue.md, events-found.md)

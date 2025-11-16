@@ -82,7 +82,14 @@ Your City, State
 ## Usage
 
 ```bash
+# Use default parameters file and auto-generated results filename
 python serendipity_agent.py
+
+# Use custom parameters file
+python serendipity_agent.py my-custom-parameters.md
+
+# Use custom parameters file and custom results filename
+python serendipity_agent.py my-custom-parameters.md results/my-results.md
 ```
 
 The agent will:

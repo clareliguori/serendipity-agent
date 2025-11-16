@@ -9,10 +9,10 @@ import os
 from dotenv import load_dotenv
 
 
-def main():
+def main(parameters_file_arg=None, results_file_arg=None):
     load_dotenv()
 
-    parameters_file = os.getenv("PARAMETERS_FILE", "./serendipity-parameters.md")
+    parameters_file = parameters_file_arg or os.getenv("PARAMETERS_FILE", "./serendipity-parameters.md")
     output_directory = os.getenv("OUTPUT_DIRECTORY", "./results")
 
     # Clean up previous run files
@@ -53,6 +53,7 @@ def main():
 Parameters:
 - **parameters_file**: {parameters_file}
 - **output_directory**: {output_directory}
+- **results_file**: {results_file_arg or "serendipity-results-yyyy-mm-dd.md (auto-generated)"}
 
 Please coordinate the sub-agents to find and compile interesting events."""
 
