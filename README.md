@@ -95,11 +95,12 @@ The agent will:
 
 ## File Structure
 
-- `serendipity_agent.py` - Main orchestrator
-- `serendipity-main.script.md` - Main orchestrator script
-- `local-search.script.md` - Local search sub-agent script
-- `url-processor.script.md` - URL processor sub-agent script
-- `sub_agent_tools.py` - Sub-agent tool wrappers
+- `serendipity_agent.py` - Main entry point
+- `src/orchestrator_agent.py` - Main orchestrator implementation
+- `src/sub_agent_tools.py` - Sub-agent tool wrappers
+- `agent_scripts/serendipity-main.script.md` - Main orchestrator script
+- `agent_scripts/local-search.script.md` - Local search sub-agent script
+- `agent_scripts/url-processor.script.md` - URL processor sub-agent script
 
 ## Output
 

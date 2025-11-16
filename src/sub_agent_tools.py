@@ -19,7 +19,7 @@ def run_local_search_agent(
 ) -> str:
     """Run the local search sub-agent to find events and populate the URL queue."""
 
-    script_path = os.path.join(os.path.dirname(__file__), "local-search.script.md")
+    script_path = os.path.join(os.path.dirname(__file__), "..", "agent_scripts", "local-search.script.md")
     with open(script_path, "r") as f:
         script_content = f.read()
 
@@ -75,7 +75,7 @@ def run_url_processor_agent(
 ) -> str:
     """Run the URL processor sub-agent to extract events from queued URLs."""
 
-    script_path = os.path.join(os.path.dirname(__file__), "url-processor.script.md")
+    script_path = os.path.join(os.path.dirname(__file__), "..", "agent_scripts", "url-processor.script.md")
     with open(script_path, "r") as f:
         script_content = f.read()
 
