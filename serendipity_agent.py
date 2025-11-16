@@ -2,7 +2,7 @@
 
 from strands.agent import Agent
 from strands.models import BedrockModel
-from strands_tools import file_write, file_read, current_time, http_request
+from strands_tools import file_write, file_read, current_time, http_request, sleep
 from strands_tools.browser import LocalChromiumBrowser
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
@@ -55,7 +55,7 @@ def main():
         name="SerendipityFinder",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[file_write, file_read, current_time, http_request, browser_tool.browser, brave_mcp],
+        tools=[file_write, file_read, current_time, http_request, sleep, browser_tool.browser, brave_mcp],
     )
 
     # Get parameters from environment and file

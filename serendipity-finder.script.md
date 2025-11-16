@@ -90,7 +90,7 @@ Process each URL in the queue, extracting content and discovering additional eve
 - You MUST filter events to only include those occurring within the 2-month timeframe established in step 2
 - You MUST move completed URLs to "Completed URLs" section with status (success/failed/timeout)
 - You MUST continue processing until the "Pending URLs" section is empty
-- You SHOULD implement reasonable rate limiting between page requests to avoid overwhelming websites
+- You SHOULD implement rate limiting by using the sleep tool to wait 1-2 seconds between page requests to avoid overwhelming websites
 
 ### 6. Interest Expansion and Filtering
 
