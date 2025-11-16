@@ -1,5 +1,5 @@
 strands-agents
-strands-agents-tools
+strands-agents-tools[local_chromium_browser]
 python-dotenv
 mcp
 boto3

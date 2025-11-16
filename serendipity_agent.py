@@ -3,6 +3,7 @@
 from strands.agent import Agent
 from strands.models import BedrockModel
 from strands_tools import file_write, file_read, current_time, http_request
+from strands_tools.browser import LocalChromiumBrowser
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from botocore.config import Config
@@ -41,6 +42,9 @@ def main():
         )
     )
 
+    # Create browser tool
+    browser_tool = LocalChromiumBrowser()
+
     # Create and run the agent with required tools
     bedrock_model = BedrockModel(
         model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
@@ -51,7 +55,7 @@ def main():
         name="SerendipityFinder",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[file_write, file_read, current_time, http_request, brave_mcp],
+        tools=[file_write, file_read, current_time, http_request, browser_tool.browser, brave_mcp],
     )
 
     # Get parameters from environment and file

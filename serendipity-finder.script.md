@@ -46,11 +46,14 @@ Get the current date and time to establish the 2-month filtering window.
 
 ### 3. Website Content Extraction
 
-Scan each provided website for event-related content, following pagination to collect all relevant events.
+Scan each provided website for specific upcoming events with dates, following pagination to collect all relevant events.
 
 **Constraints:**
 
-- You MUST fetch content from each website URL using the http_request tool
+- You MUST first attempt to fetch content from each website URL using the http_request tool
+- If http_request returns no events or minimal content, You MUST retry using the local_chromium_browser tool because the site likely uses JavaScript to load content dynamically
+- You MUST look for specific event instances with actual dates, not general class descriptions or venue information
+- You MUST NOT include venues, organizations, or class providers unless they have specific upcoming events with dates listed
 - You MUST detect pagination indicators such as "Next", "More", page numbers, or "Load More" buttons
 - You MUST follow pagination links to retrieve additional pages until no more events within the 2-month timeframe are found
 - You MUST look for event indicators such as dates, times, locations, and event descriptions on each page
@@ -75,16 +78,18 @@ Expand the interests list with related activities and filter events accordingly.
 
 ### 5. Local Area Web Search
 
-Perform targeted web searches for additional events in the user's local area using both explicit and related interests.
+Perform targeted web searches for specific upcoming events with dates in the user's local area using both explicit and related interests.
 
 **Constraints:**
 
-- You MUST search for each explicit interest combined with the local area and terms like "events", "classes", "workshops"
+- You MUST search for specific upcoming events with dates, not general class providers or venues
+- You MUST search for each explicit interest combined with the local area and terms like "events", "classes", "workshops", "upcoming", "schedule"
 - You MUST also search for related interests that logically connect to the user's stated hobbies
 - You MUST use Brave search tools from the MCP server for comprehensive results
 - You SHOULD search with date filters for the 2-month timeframe established in step 2 when possible
-- You MUST extract event details from search results
-- You SHOULD prioritize official event websites and established event platforms
+- You MUST extract specific event details from search results including dates and times
+- You MUST NOT include general venue descriptions or "about us" pages without specific event dates
+- You SHOULD prioritize official event websites and established event platforms with actual event calendars
 - You MUST clearly indicate in results whether an event matches explicit or related interests
 
 ### 5. Results Compilation and Output

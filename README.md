@@ -25,7 +25,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure Parameters
+### 4. Configure Parameters
 
 Copy and edit the environment file:
 
