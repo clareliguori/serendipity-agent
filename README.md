@@ -2,13 +2,24 @@
 
 AI agent that finds events, classes, workshops that you might find interesting based on your hobbies and interests.
 
+## Architecture
+
+The serendipity agent uses a modular sub-agent architecture to prevent context overflow:
+
+- **Main Orchestrator** (`serendipity_agent.py`) - Coordinates the overall process and manages file I/O
+- **Local Search Sub-Agent** - Handles Brave API searches and populates URL queue
+- **URL Processor Sub-Agent** - Processes URLs from queue and extracts events to file
+
+Sub-agents communicate through files rather than return values to minimize context usage.
+
 ## Features
 
 - Scans specified websites for events, classes, and workshops
 - Performs web searches using Brave API for local events
 - Filters results based on your interests and related activities
 - Generates curated markdown reports with event details
-- Handles pagination and date filtering (next 2 months)
+- Handles pagination and date filtering (configurable date range)
+- Modular architecture prevents context overflow issues
 
 ## Setup
 
@@ -25,7 +36,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure Parameters
+### 3. Configure Parameters
 
 Copy and edit the environment file:
 
@@ -77,9 +88,18 @@ python serendipity_agent.py
 The agent will:
 
 1. Read your parameters from the configured files
-2. Scan websites for relevant events
-3. Search for local events using Brave API
-4. Generate a markdown report in the output directory
+2. Initialize URL queue with provided websites
+3. Run local search sub-agent to find relevant events via Brave API
+4. Run URL processor sub-agent to extract events from queued URLs
+5. Generate a markdown report in the output directory
+
+## File Structure
+
+- `serendipity_agent.py` - Main orchestrator
+- `serendipity-main.script.md` - Main orchestrator script
+- `local-search.script.md` - Local search sub-agent script
+- `url-processor.script.md` - URL processor sub-agent script
+- `sub_agent_tools.py` - Sub-agent tool wrappers
 
 ## Output
 

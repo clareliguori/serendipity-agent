@@ -2,73 +2,59 @@
 
 from strands.agent import Agent
 from strands.models import BedrockModel
-from strands_tools import file_write, file_read, current_time, http_request, sleep
-from strands_tools.browser import LocalChromiumBrowser
-from strands.tools.mcp import MCPClient
-from mcp import stdio_client, StdioServerParameters
+from strands_tools import file_write, file_read, current_time
+from sub_agent_tools import run_local_search_agent, run_url_processor_agent
 from botocore.config import Config
 import os
 from dotenv import load_dotenv
 
 
 def main():
-    # Load environment variables
     load_dotenv()
 
-    # Configure boto3 client with retries
-    boto_client_config = Config(
-        retries={
-            "max_attempts": 10,
-            "mode": "standard",
-        }
-    )
+    parameters_file = os.getenv("PARAMETERS_FILE", "./serendipity-parameters.md")
+    output_directory = os.getenv("OUTPUT_DIRECTORY", "./results")
 
-    # Load the agent script
-    script_path = os.path.join(
-        os.path.dirname(__file__), "serendipity-finder.script.md"
-    )
+    # Clean up previous run files
+    queue_file = os.path.join(output_directory, "url-queue.md")
+    events_file = os.path.join(output_directory, "events-found.md")
 
+    if os.path.exists(queue_file):
+        os.remove(queue_file)
+    if os.path.exists(events_file):
+        os.remove(events_file)
+
+    boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
+
+    script_path = os.path.join(os.path.dirname(__file__), "serendipity-main.script.md")
     with open(script_path, "r") as f:
         script_content = f.read()
 
-    # Create Brave MCP client
-    brave_mcp = MCPClient(
-        lambda: stdio_client(
-            StdioServerParameters(
-                command="npx",
-                args=["-y", "@brave/brave-search-mcp-server"],
-                env={"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")},
-            )
-        )
-    )
-
-    # Create browser tool
-    browser_tool = LocalChromiumBrowser()
-
-    # Create and run the agent with required tools
     bedrock_model = BedrockModel(
         model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
         boto_client_config=boto_client_config,
     )
 
     agent = Agent(
-        name="SerendipityFinder",
+        name="SerendipityOrchestrator",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[file_write, file_read, current_time, http_request, sleep, browser_tool.browser, brave_mcp],
+        tools=[
+            file_write,
+            file_read,
+            current_time,
+            run_local_search_agent,
+            run_url_processor_agent,
+        ],
     )
 
-    # Get parameters from environment and file
-    parameters_file = os.getenv("PARAMETERS_FILE", "./serendipity-parameters.md")
-    output_directory = os.getenv("OUTPUT_DIRECTORY", "./results")
+    initial_prompt = f"""Orchestrate the serendipity event finding process using sub-agents.
 
-    # Start with parameters
-    initial_prompt = f"""I need help finding interesting events, classes, and workshops. Here are my parameters:
-
-- **parameters_file**: {parameters_file} (contains websites, interests, and local_area)
+Parameters:
+- **parameters_file**: {parameters_file}
 - **output_directory**: {output_directory}
 
-Please read the parameters file to get the websites, interests, and local_area, then proceed with the serendipity finding process."""
+Please coordinate the sub-agents to find and compile interesting events."""
 
     result = agent(initial_prompt)
     print(result)

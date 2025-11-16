@@ -12,6 +12,7 @@ This script discovers events, classes, and workshops that match your interests b
 - **output_directory** (required): Directory path where the results file will be saved
 
 **Constraints for parameter acquisition:**
+
 - You MUST ask for all required parameters upfront in a single prompt rather than one at a time
 - You MUST support multiple input methods including:
   - Direct input: Text provided directly in the conversation
@@ -27,6 +28,7 @@ This script discovers events, classes, and workshops that match your interests b
 Collect all required parameters from the user and validate the inputs.
 
 **Constraints:**
+
 - You MUST verify that all website URLs are accessible
 - You MUST ensure the output directory exists or can be created
 - You MUST validate that interests list contains at least one item
@@ -37,27 +39,31 @@ Collect all required parameters from the user and validate the inputs.
 Get the current date and time to establish the 2-month filtering window.
 
 **Constraints:**
+
 - You MUST use the current_time tool to get the current date and time before any other operations
 - You MUST calculate the end date as exactly 2 months from the current date
 - You MUST use this timeframe for all subsequent event filtering operations
 - You SHOULD save the current date and end date for reference throughout the process
 
-### 3. URL Queue Initialization
+### 3. URL Queue and Events File Initialization
 
-Create a temporary markdown file to track all web pages that need to be retrieved and processed.
+Create temporary files to track web pages and discovered events.
 
 **Constraints:**
+
 - You MUST create a temporary file named "url-queue.md" in the output directory
 - You MUST initialize the file with sections for "Pending URLs", "Processing URLs", and "Completed URLs"
+- You MUST create a temporary file named "events-found.md" in the output directory for tracking discovered events
 - You MUST add all provided website URLs to the "Pending URLs" section
 - You MUST use the format: `- [ ] URL_HERE (source: provided_website)`
-- You MUST save this file before proceeding to search operations
+- You MUST save both files before proceeding to search operations
 
 ### 4. Local Area Web Search and Queue Population
 
 Perform targeted web searches and add result URLs to the processing queue.
 
 **Constraints:**
+
 - You MUST search for specific upcoming events with dates, not general class providers or venues
 - You MUST search for each explicit interest combined with the local area and terms like "events", "classes", "workshops", "upcoming", "schedule"
 - You MUST also search for related interests that logically connect to the user's stated hobbies
@@ -74,14 +80,14 @@ Perform targeted web searches and add result URLs to the processing queue.
 Process each URL in the queue, extracting content and discovering additional event pages.
 
 **Constraints:**
+
 - You MUST process URLs from the "Pending URLs" section one at a time
 - You MUST move each URL to "Processing URLs" section before fetching it
 - You MUST check if the URL already exists in the "Completed URLs" section before processing to prevent infinite loops
 - You MUST NOT add URLs to "Pending URLs" if they already exist in any section of the queue file
-- You MUST first attempt to fetch content using the http_request tool
-- If http_request returns no events or minimal content, You MUST retry using the local_chromium_browser tool
-- You MUST NOT spend more than 2 minutes total on any single URL because browser timeouts can stall the entire process
-- If the browser tool times out after 30 seconds, You MUST immediately move to the next URL because continuing would waste time
+- You MUST fetch content using the http_request tool
+- You MUST NOT spend more than 2 minutes total on any single URL because timeouts can stall the entire process
+- If no usable content is returned after http_request attempts, You MUST mark the URL as failed and move to the next URL
 - You MUST look for specific event instances with actual dates, not general class descriptions or venue information
 - You MUST detect pagination indicators such as "Next", "More", page numbers, or "Load More" buttons
 - When you find pagination links or individual event detail pages, You MUST check if the URL already exists in the queue before adding it
@@ -97,6 +103,7 @@ Process each URL in the queue, extracting content and discovering additional eve
 Expand the interests list with related activities and filter events accordingly.
 
 **Constraints:**
+
 - You MUST generate related interests based on the provided list (e.g., if "photography" is listed, include "digital art", "photo editing", "visual storytelling")
 - You MUST compare event titles and descriptions against both explicit and related interests
 - You SHOULD use semantic matching to identify relevant events even when exact keywords don't match
@@ -109,6 +116,7 @@ Expand the interests list with related activities and filter events accordingly.
 Compile all discovered events into a structured markdown file.
 
 **Constraints:**
+
 - You MUST create a file named "serendipity-results-yyyy-mm-dd.md" using current_time tool to get today's date
 - You MUST organize events by date in chronological order
 - You MUST include for each event: title, date/time, location, full description, instructor/presenter info (if available), prerequisites, registration details, pricing, source URL, event page URL (if different from source), and relevance to interests
@@ -134,6 +142,7 @@ output_directory: "/home/user/events"
 # URL Processing Queue
 
 ## Pending URLs
+
 - [ ] https://example-community-center.com (source: provided_website)
 - [ ] https://local-library.org/events (source: provided_website)
 - [ ] https://eventbrite.com/seattle-photography (source: brave_search, query: "photography events Seattle")
@@ -141,6 +150,7 @@ output_directory: "/home/user/events"
 ## Processing URLs
 
 ## Completed URLs
+
 - [x] https://example-community-center.com (status: success, events_found: 3)
 ```
 
@@ -181,13 +191,17 @@ output_directory: "/home/user/events"
 ## Troubleshooting
 
 ### Website Access Issues
+
 If a website is inaccessible or returns errors, you should log the issue in the Completed URLs section and continue with remaining websites rather than stopping the entire process.
 
-### Browser Tool Timeouts
-If the browser tool consistently times out, you should rely on http_request results and continue processing the queue since some content is better than no content.
+### HTTP Request Limitations
+
+If websites use heavy JavaScript to load content dynamically, the http_request tool may return limited content, but you should work with whatever content is available rather than skipping the site entirely.
 
 ### Queue Management Issues
+
 If the URL queue becomes corrupted or unreadable, you should recreate it with any remaining unprocessed URLs and continue from where you left off.
 
 ### No Events Found
+
 If no events are found for a particular interest, you should expand search terms to include related activities and broader categories before concluding the search.
