@@ -11,7 +11,6 @@ This agent processes URLs from a queue file, extracts event content, and writes 
 - **interests** (required): List of interests for filtering relevance
 - **start_date** (required): Start date for event filtering
 - **end_date** (required): End date for event filtering
-- **max_urls** (optional, default: 3): Maximum URLs to process in this run
 
 ## Steps
 
@@ -25,18 +24,18 @@ Read current state of processing files.
 - You MUST read the events_file to track discovered events
 - You MUST create files if they don't exist
 
-### 2. Process Pending URLs
+### 2. Process First Pending URL
 
-Extract content from queued URLs one at a time.
+Extract content from the first URL in the queue.
 
 **Constraints:**
 
-- You MUST process URLs from "Pending URLs" section only
-- You MUST move each URL to "Processing URLs" before fetching
+- You MUST process only the first URL from "Pending URLs" section
+- You MUST move the URL to "Processing URLs" before fetching
 - You MUST NOT process URLs already in "Completed URLs"
 - You MUST use http_request tool with 2-minute timeout maximum
 - You MUST implement 1-2 second delays between requests
-- You MUST move completed URLs to "Completed URLs" with status
+- You MUST move completed URL to "Completed URLs" with status
 
 ### 3. Extract Event Information
 

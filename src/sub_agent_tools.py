@@ -90,7 +90,6 @@ def run_url_processor_agent(
     interests: str,
     start_date: str,
     end_date: str,
-    max_urls: str = "3",
 ) -> str:
     """Run the URL processor sub-agent to extract events from queued URLs."""
 
@@ -123,7 +122,6 @@ Parameters:
 - **interests**: {interests}
 - **start_date**: {start_date}
 - **end_date**: {end_date}
-- **max_urls**: {max_urls}
 
 Please execute the URL processing and return only a summary count of events found."""
 
