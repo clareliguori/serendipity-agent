@@ -52,8 +52,7 @@ Write new URLs to the queue file.
 
 **Constraints:**
 
-- You MUST read the existing queue_file content first to preserve existing structure
 - You MUST append new URLs to the "Pending URLs" section only
 - You MUST preserve all existing queue content and structure
-- You MUST save the complete updated queue file with file_write
+- You MUST edit the queue file using filesystem tools
 - You MUST return a simple count of URLs added, not the full list

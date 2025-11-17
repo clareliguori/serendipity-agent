@@ -11,7 +11,7 @@ This agent processes URLs from a queue file, extracts event content, and writes 
 - **interests** (required): List of interests for filtering relevance
 - **start_date** (required): Start date for event filtering
 - **end_date** (required): End date for event filtering
-- **max_urls** (optional, default: 10): Maximum URLs to process in this run
+- **max_urls** (optional, default: 3): Maximum URLs to process in this run
 
 ## Steps
 
@@ -67,9 +67,7 @@ Write discovered events and update queue status.
 
 **Constraints:**
 
-- You MUST read existing events_file content first before adding new events
 - You MUST append new events to the existing events_file content
-- You MUST read existing queue_file content before updating
 - You MUST update queue_file with completed URLs and any new discoveries while preserving existing content
-- You MUST use file_write to save the complete updated files
+- You MUST use filesystem tools to edit files
 - You MUST return only a simple summary count, not full event details

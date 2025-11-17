@@ -51,7 +51,7 @@ Run the URL processor agent to extract events from queued URLs.
 **Constraints:**
 
 - You MUST use run_url_processor_agent tool with queue_file, events_file, interests, start_date, end_date
-- You MUST process in batches of 10 URLs maximum per run
+- You MUST process in batches of 3 URLs maximum per run
 - You MUST continue calling until no pending URLs remain or reasonable limit reached
 - You MUST capture only summary counts, not full event details
 

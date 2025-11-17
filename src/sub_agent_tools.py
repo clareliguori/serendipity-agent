@@ -4,7 +4,7 @@ import os
 from strands.tools import tool
 from strands.agent import Agent
 from strands.models import BedrockModel
-from strands_tools import file_write, file_read, http_request, sleep
+from strands_tools import http_request, sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from botocore.config import Config
@@ -13,13 +13,30 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def create_filesystem_mcp():
+    """Create MCP filesystem client with allowed directories."""
+    # Sub-agents only need access to output directory
+    output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
+
+    return MCPClient(
+        lambda: stdio_client(
+            StdioServerParameters(
+                command="npx",
+                args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
+            )
+        )
+    )
+
+
 @tool
 def run_local_search_agent(
     interests: str, local_area: str, queue_file: str, start_date: str, end_date: str
 ) -> str:
     """Run the local search sub-agent to find events and populate the URL queue."""
 
-    script_path = os.path.join(os.path.dirname(__file__), "..", "agent_scripts", "local-search.script.md")
+    script_path = os.path.join(
+        os.path.dirname(__file__), "..", "agent_scripts", "local-search.script.md"
+    )
     with open(script_path, "r") as f:
         script_content = f.read()
 
@@ -33,6 +50,8 @@ def run_local_search_agent(
         )
     )
 
+    filesystem_mcp = create_filesystem_mcp()
+
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
     bedrock_model = BedrockModel(
         model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
@@ -43,7 +62,7 @@ def run_local_search_agent(
         name="LocalSearchAgent",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[file_write, file_read, brave_mcp],
+        tools=[filesystem_mcp, brave_mcp],
     )
 
     prompt = f"""Search for local events and update the queue file.
@@ -71,13 +90,17 @@ def run_url_processor_agent(
     interests: str,
     start_date: str,
     end_date: str,
-    max_urls: str = "10",
+    max_urls: str = "3",
 ) -> str:
     """Run the URL processor sub-agent to extract events from queued URLs."""
 
-    script_path = os.path.join(os.path.dirname(__file__), "..", "agent_scripts", "url-processor.script.md")
+    script_path = os.path.join(
+        os.path.dirname(__file__), "..", "agent_scripts", "url-processor.script.md"
+    )
     with open(script_path, "r") as f:
         script_content = f.read()
+
+    filesystem_mcp = create_filesystem_mcp()
 
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
     bedrock_model = BedrockModel(
@@ -89,7 +112,7 @@ def run_url_processor_agent(
         name="URLProcessorAgent",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[file_write, file_read, http_request, sleep],
+        tools=[filesystem_mcp, http_request, sleep],
     )
 
     prompt = f"""Process URLs from the queue and extract events.

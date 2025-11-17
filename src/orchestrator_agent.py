@@ -2,7 +2,9 @@
 
 from strands.agent import Agent
 from strands.models import BedrockModel
-from strands_tools import file_write, file_read, current_time
+from strands_tools import current_time
+from strands.tools.mcp import MCPClient
+from mcp import stdio_client, StdioServerParameters
 from .sub_agent_tools import run_local_search_agent, run_url_processor_agent
 from botocore.config import Config
 import os
@@ -12,8 +14,35 @@ from dotenv import load_dotenv
 def main(parameters_file_arg=None, results_file_arg=None):
     load_dotenv()
 
-    parameters_file = parameters_file_arg or os.getenv("PARAMETERS_FILE", "./serendipity-parameters.md")
+    parameters_file = parameters_file_arg or os.getenv("PARAMETERS_FILE")
+    if not parameters_file:
+        raise ValueError(
+            "Parameters file must be provided via command line argument or PARAMETERS_FILE environment variable"
+        )
+
     output_directory = os.getenv("OUTPUT_DIRECTORY", "./results")
+
+    # Get absolute paths for MCP filesystem server allowed directories
+    abs_output_dir = os.path.abspath(output_directory)
+    abs_params_dir = os.path.abspath(os.path.dirname(parameters_file))
+    abs_results_dir = abs_output_dir
+    if results_file_arg:
+        abs_results_dir = os.path.abspath(os.path.dirname(results_file_arg))
+
+    # De-duplicate allowed directories
+    allowed_dirs = list(
+        dict.fromkeys([abs_output_dir, abs_params_dir, abs_results_dir])
+    )
+
+    # Create MCP filesystem client with allowed directories
+    filesystem_mcp = MCPClient(
+        lambda: stdio_client(
+            StdioServerParameters(
+                command="npx",
+                args=["-y", "@modelcontextprotocol/server-filesystem"] + allowed_dirs,
+            )
+        )
+    )
 
     # Clean up previous run files
     queue_file = os.path.join(output_directory, "url-queue.md")
@@ -26,7 +55,9 @@ def main(parameters_file_arg=None, results_file_arg=None):
 
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
 
-    script_path = os.path.join(os.path.dirname(__file__), "..", "agent_scripts", "serendipity-main.script.md")
+    script_path = os.path.join(
+        os.path.dirname(__file__), "..", "agent_scripts", "serendipity-main.script.md"
+    )
     with open(script_path, "r") as f:
         script_content = f.read()
 
@@ -40,8 +71,7 @@ def main(parameters_file_arg=None, results_file_arg=None):
         system_prompt=script_content,
         model=bedrock_model,
         tools=[
-            file_write,
-            file_read,
+            filesystem_mcp,
             current_time,
             run_local_search_agent,
             run_url_processor_agent,
