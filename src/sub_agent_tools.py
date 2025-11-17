@@ -13,19 +13,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def create_filesystem_mcp():
-    """Create MCP filesystem client with allowed directories."""
-    # Sub-agents only need access to output directory
-    output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
+# Shared MCP filesystem client - initialized once
+_filesystem_mcp = None
 
-    return MCPClient(
-        lambda: stdio_client(
-            StdioServerParameters(
-                command="npx",
-                args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
+def get_filesystem_mcp():
+    """Get or create the shared MCP filesystem client."""
+    global _filesystem_mcp
+    if _filesystem_mcp is None:
+        output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
+        _filesystem_mcp = MCPClient(
+            lambda: stdio_client(
+                StdioServerParameters(
+                    command="npx",
+                    args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
+                )
             )
         )
-    )
+    return _filesystem_mcp
 
 
 @tool
@@ -50,7 +54,7 @@ def run_local_search_agent(
         )
     )
 
-    filesystem_mcp = create_filesystem_mcp()
+    filesystem_mcp = get_filesystem_mcp()
 
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
     bedrock_model = BedrockModel(
@@ -99,7 +103,7 @@ def run_url_processor_agent(
     with open(script_path, "r") as f:
         script_content = f.read()
 
-    filesystem_mcp = create_filesystem_mcp()
+    filesystem_mcp = get_filesystem_mcp()
 
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
     bedrock_model = BedrockModel(
