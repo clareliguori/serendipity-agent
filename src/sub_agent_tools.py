@@ -4,7 +4,7 @@ import os
 from strands.tools import tool
 from strands.agent import Agent
 from strands.models import BedrockModel
-from strands_tools import http_request, sleep
+from strands_tools import sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from botocore.config import Config
@@ -13,8 +13,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Shared MCP filesystem client - initialized once
+# Shared MCP clients - initialized once
 _filesystem_mcp = None
+_fetch_mcp = None
 
 def get_filesystem_mcp():
     """Get or create the shared MCP filesystem client."""
@@ -30,6 +31,20 @@ def get_filesystem_mcp():
             )
         )
     return _filesystem_mcp
+
+def get_fetch_mcp():
+    """Get or create the shared MCP fetch client."""
+    global _fetch_mcp
+    if _fetch_mcp is None:
+        _fetch_mcp = MCPClient(
+            lambda: stdio_client(
+                StdioServerParameters(
+                    command="uvx",
+                    args=["mcp-server-fetch"],
+                )
+            )
+        )
+    return _fetch_mcp
 
 
 @tool
@@ -104,6 +119,7 @@ def run_url_processor_agent(
         script_content = f.read()
 
     filesystem_mcp = get_filesystem_mcp()
+    fetch_mcp = get_fetch_mcp()
 
     boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
     bedrock_model = BedrockModel(
@@ -115,7 +131,7 @@ def run_url_processor_agent(
         name="URLProcessorAgent",
         system_prompt=script_content,
         model=bedrock_model,
-        tools=[filesystem_mcp, http_request, sleep],
+        tools=[filesystem_mcp, fetch_mcp, sleep],
     )
 
     prompt = f"""Process URLs from the queue and extract events.

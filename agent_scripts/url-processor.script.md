@@ -33,7 +33,7 @@ Extract content from the first URL in the queue.
 - You MUST process only the first URL from "Pending URLs" section
 - You MUST move the URL to "Processing URLs" before fetching
 - You MUST NOT process URLs already in "Completed URLs"
-- You MUST use http_request tool with 2-minute timeout maximum
+- You MUST use fetch tool to retrieve URL content
 - You MUST implement 1-2 second delays between requests
 - You MUST move completed URL to "Completed URLs" with status
 

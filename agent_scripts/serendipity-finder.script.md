@@ -86,7 +86,6 @@ Process each URL in the queue, extracting content and discovering additional eve
 - You MUST check if the URL already exists in the "Completed URLs" section before processing to prevent infinite loops
 - You MUST NOT add URLs to "Pending URLs" if they already exist in any section of the queue file
 - You MUST fetch content using the http_request tool
-- You MUST NOT spend more than 2 minutes total on any single URL because timeouts can stall the entire process
 - If no usable content is returned after http_request attempts, You MUST mark the URL as failed and move to the next URL
 - You MUST look for specific event instances with actual dates, not general class descriptions or venue information
 - You MUST detect pagination indicators such as "Next", "More", page numbers, or "Load More" buttons
