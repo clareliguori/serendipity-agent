@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 from strands.agent import Agent
-from strands.models import BedrockModel
+from strands.models.anthropic import AnthropicModel
 from strands_tools import current_time
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from .sub_agent_tools import run_local_search_agent, run_url_processor_agent
-from botocore.config import Config
 import os
 from dotenv import load_dotenv
 
@@ -53,23 +52,22 @@ def main(parameters_file_arg=None, results_file_arg=None):
     if os.path.exists(events_file):
         os.remove(events_file)
 
-    boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
-
     script_path = os.path.join(
         os.path.dirname(__file__), "..", "agent_scripts", "serendipity-main.script.md"
     )
     with open(script_path, "r") as f:
         script_content = f.read()
 
-    bedrock_model = BedrockModel(
-        model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        boto_client_config=boto_client_config,
+    anthropic_model = AnthropicModel(
+        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
+        model_id="claude-haiku-4-5-20251001",
+        max_tokens=4096,
     )
 
     agent = Agent(
         name="SerendipityOrchestrator",
         system_prompt=script_content,
-        model=bedrock_model,
+        model=anthropic_model,
         tools=[
             filesystem_mcp,
             current_time,

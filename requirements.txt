@@ -1,6 +1,4 @@
-strands-agents
+strands-agents[anthropic]
 strands-agents-tools[local_chromium_browser]
 python-dotenv
 mcp
-boto3
-boto3

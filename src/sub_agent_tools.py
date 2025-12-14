@@ -3,11 +3,10 @@
 import os
 from strands.tools import tool
 from strands.agent import Agent
-from strands.models import BedrockModel
+from strands.models.anthropic import AnthropicModel
 from strands_tools import sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
-from botocore.config import Config
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -71,16 +70,16 @@ def run_local_search_agent(
 
     filesystem_mcp = get_filesystem_mcp()
 
-    boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
-    bedrock_model = BedrockModel(
-        model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        boto_client_config=boto_client_config,
+    anthropic_model = AnthropicModel(
+        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
+        model_id="claude-haiku-4-5-20251001",
+        max_tokens=4096,
     )
 
     agent = Agent(
         name="LocalSearchAgent",
         system_prompt=script_content,
-        model=bedrock_model,
+        model=anthropic_model,
         tools=[filesystem_mcp, brave_mcp],
     )
 
@@ -121,16 +120,16 @@ def run_url_processor_agent(
     filesystem_mcp = get_filesystem_mcp()
     fetch_mcp = get_fetch_mcp()
 
-    boto_client_config = Config(retries={"max_attempts": 10, "mode": "standard"})
-    bedrock_model = BedrockModel(
-        model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        boto_client_config=boto_client_config,
+    anthropic_model = AnthropicModel(
+        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
+        model_id="claude-haiku-4-5-20251001",
+        max_tokens=4096,
     )
 
     agent = Agent(
         name="URLProcessorAgent",
         system_prompt=script_content,
-        model=bedrock_model,
+        model=anthropic_model,
         tools=[filesystem_mcp, fetch_mcp, sleep],
     )
 
