@@ -38,8 +38,8 @@ def get_fetch_mcp():
         _fetch_mcp = MCPClient(
             lambda: stdio_client(
                 StdioServerParameters(
-                    command="uvx",
-                    args=["mcp-server-fetch"],
+                    command="python",
+                    args=["-W", "ignore::RuntimeWarning:asyncio", "-m", "mcp_server_fetch"],
                 )
             )
         )

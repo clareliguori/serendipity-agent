@@ -2,3 +2,4 @@ strands-agents[anthropic]
 strands-agents-tools[local_chromium_browser]
 python-dotenv
 mcp
+mcp-server-fetch
