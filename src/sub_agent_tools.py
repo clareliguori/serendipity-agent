@@ -12,38 +12,30 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Shared MCP clients - initialized once
-_filesystem_mcp = None
-_fetch_mcp = None
+def create_filesystem_mcp():
+    """Create MCP filesystem client with allowed directories."""
+    # Sub-agents only need access to output directory
+    output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
 
-def get_filesystem_mcp():
-    """Get or create the shared MCP filesystem client."""
-    global _filesystem_mcp
-    if _filesystem_mcp is None:
-        output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
-        _filesystem_mcp = MCPClient(
-            lambda: stdio_client(
-                StdioServerParameters(
-                    command="npx",
-                    args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
-                )
+    return MCPClient(
+        lambda: stdio_client(
+            StdioServerParameters(
+                command="npx",
+                args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
             )
         )
-    return _filesystem_mcp
+    )
 
-def get_fetch_mcp():
-    """Get or create the shared MCP fetch client."""
-    global _fetch_mcp
-    if _fetch_mcp is None:
-        _fetch_mcp = MCPClient(
-            lambda: stdio_client(
-                StdioServerParameters(
-                    command="python",
-                    args=["-W", "ignore::RuntimeWarning:asyncio", "-m", "mcp_server_fetch"],
-                )
+def create_fetch_mcp():
+    """Create MCP fetch client."""
+    return MCPClient(
+        lambda: stdio_client(
+            StdioServerParameters(
+                command="python",
+                args=["-W", "ignore::RuntimeWarning:asyncio", "-m", "mcp_server_fetch"],
             )
         )
-    return _fetch_mcp
+    )
 
 
 @tool
@@ -68,7 +60,7 @@ def run_local_search_agent(
         )
     )
 
-    filesystem_mcp = get_filesystem_mcp()
+    filesystem_mcp = create_filesystem_mcp()
 
     anthropic_model = AnthropicModel(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
@@ -76,14 +68,17 @@ def run_local_search_agent(
         max_tokens=4096,
     )
 
-    agent = Agent(
-        name="LocalSearchAgent",
-        system_prompt=script_content,
-        model=anthropic_model,
-        tools=[filesystem_mcp, brave_mcp],
-    )
+    # Use context managers for proper MCP lifecycle management
+    with filesystem_mcp, brave_mcp:
+        tools = filesystem_mcp.list_tools_sync() + brave_mcp.list_tools_sync()
+        agent = Agent(
+            name="LocalSearchAgent",
+            system_prompt=script_content,
+            model=anthropic_model,
+            tools=tools,
+        )
 
-    prompt = f"""Search for local events and update the queue file.
+        prompt = f"""Search for local events and update the queue file.
 
 Parameters:
 - **interests**: {interests}
@@ -94,11 +89,11 @@ Parameters:
 
 Please execute the local search process and return only the count of URLs added."""
 
-    try:
-        response = agent(prompt)
-        return str(response)
-    except Exception as e:
-        return f"Error in local search agent: {str(e)}"
+        try:
+            response = agent(prompt)
+            return str(response)
+        except Exception as e:
+            return f"Error in local search agent: {str(e)}"
 
 
 @tool
@@ -117,8 +112,8 @@ def run_url_processor_agent(
     with open(script_path, "r") as f:
         script_content = f.read()
 
-    filesystem_mcp = get_filesystem_mcp()
-    fetch_mcp = get_fetch_mcp()
+    filesystem_mcp = create_filesystem_mcp()
+    fetch_mcp = create_fetch_mcp()
 
     anthropic_model = AnthropicModel(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
@@ -126,14 +121,17 @@ def run_url_processor_agent(
         max_tokens=4096,
     )
 
-    agent = Agent(
-        name="URLProcessorAgent",
-        system_prompt=script_content,
-        model=anthropic_model,
-        tools=[filesystem_mcp, fetch_mcp, sleep],
-    )
+    # Use context managers for proper MCP lifecycle management
+    with filesystem_mcp, fetch_mcp:
+        tools = filesystem_mcp.list_tools_sync() + fetch_mcp.list_tools_sync() + [sleep]
+        agent = Agent(
+            name="URLProcessorAgent",
+            system_prompt=script_content,
+            model=anthropic_model,
+            tools=tools,
+        )
 
-    prompt = f"""Process URLs from the queue and extract events.
+        prompt = f"""Process URLs from the queue and extract events.
 
 Parameters:
 - **queue_file**: {queue_file}
@@ -144,8 +142,8 @@ Parameters:
 
 Please execute the URL processing and return only a summary count of events found."""
 
-    try:
-        response = agent(prompt)
-        return str(response)
-    except Exception as e:
-        return f"Error in URL processor agent: {str(e)}"
+        try:
+            response = agent(prompt)
+            return str(response)
+        except Exception as e:
+            return f"Error in URL processor agent: {str(e)}"

@@ -64,19 +64,22 @@ def main(parameters_file_arg=None, results_file_arg=None):
         max_tokens=4096,
     )
 
-    agent = Agent(
-        name="SerendipityOrchestrator",
-        system_prompt=script_content,
-        model=anthropic_model,
-        tools=[
-            filesystem_mcp,
+    # Use context manager for proper MCP lifecycle management
+    with filesystem_mcp:
+        tools = filesystem_mcp.list_tools_sync() + [
             current_time,
             run_local_search_agent,
             run_url_processor_agent,
-        ],
-    )
+        ]
 
-    initial_prompt = f"""Orchestrate the serendipity event finding process using sub-agents.
+        agent = Agent(
+            name="SerendipityOrchestrator",
+            system_prompt=script_content,
+            model=anthropic_model,
+            tools=tools,
+        )
+
+        initial_prompt = f"""Orchestrate the serendipity event finding process using sub-agents.
 
 Parameters:
 - **parameters_file**: {parameters_file}
@@ -85,8 +88,8 @@ Parameters:
 
 Please coordinate the sub-agents to find and compile interesting events."""
 
-    result = agent(initial_prompt)
-    print(result)
+        result = agent(initial_prompt)
+        print(result)
 
 
 if __name__ == "__main__":
