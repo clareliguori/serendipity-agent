@@ -2,24 +2,63 @@
 
 AI agent that finds events, classes, workshops that you might find interesting based on your hobbies and interests.
 
-## Architecture
-
-The serendipity agent uses a modular sub-agent architecture to prevent context overflow:
-
-- **Main Orchestrator** (`serendipity_agent.py`) - Coordinates the overall process and manages file I/O
-- **Local Search Sub-Agent** - Handles Brave API searches and populates URL queue
-- **URL Processor Sub-Agent** - Processes URLs from queue and extracts events to file
-
-Sub-agents communicate through files rather than return values to minimize context usage.
-
 ## Features
 
 - Scans specified websites for events, classes, and workshops
 - Performs web searches using Brave API for local events
 - Filters results based on your interests and related activities
-- Generates curated markdown reports with event details
 - Handles pagination and date filtering (configurable date range)
+- Generates curated markdown reports with event details
 - Modular architecture prevents context overflow issues
+
+## Architecture
+
+The serendipity agent uses a modular sub-agent architecture to prevent context overflow:
+
+- **Main Orchestrator** (`serendipity_agent.py`) - Coordinates the overall process
+- **Local Search Sub-Agent** - Handles Brave API searches and populates URL queue
+- **URL Processor Sub-Agent** - Processes a URL from the queue and extracts events to file
+
+Sub-agents save state in markdown files to minimize context length.
+
+- **Queue file**: a list of URLs to scan for upcoming events
+- **Events file**: a list of discovered events
+
+### Main orchestrator
+
+This agent manages the overall workflow while delegating intensive operations to specialized agents.
+
+The main orchestrator will generally follow these steps:
+
+1. Initialize the agent: Extract websites, interests, and local area from the parameters file.
+   Determine date range.
+   Create state files.
+2. Run the local search sub-agent to populate the queue with search results.
+3. For each URL in the queue, run the URL processor sub-agent to populate discovered events in the events file.
+4. Generate a final markdown report describing the discovered events.
+
+### Local search sub-agent
+
+This agent performs targeted web searches for local events and adds relevant URLs to the queue file.
+It focuses on finding specific upcoming events with dates rather than general venues.
+
+The local search agent will generally follow these steps:
+
+1. Generate targeted search queries for each interest described in the parameters.
+2. Perform web searches using Brave and collect relevant URLs.
+3. Append collected URLs to the queue file, avoiding adding duplicates already found in the file.
+
+### URL processor sub-agent
+
+This agent processes a given URL, extracts event content, and writes discovered events to an events file.
+
+the URL processor agent will generally follow these steps:
+
+1. Move the URL from "Pending" to "Processing" in the queue file.
+2. Fetch the contents of the URL. Extract any event details and dates from the content.
+3. Determine if the found events match provided interests and date range.
+4. Add relevant events to the events file.
+5. Move the URL from "Processing" to "Completed" in the queue file, describing any errors experienced.
 
 ## Setup
 
@@ -91,14 +130,6 @@ python serendipity_agent.py my-custom-parameters.md
 # Use custom parameters file and custom results filename
 python serendipity_agent.py my-custom-parameters.md results/my-results.md
 ```
-
-The agent will:
-
-1. Read your parameters from the configured files
-2. Initialize URL queue with provided websites
-3. Run local search sub-agent to find relevant events via Brave API
-4. Run URL processor sub-agent to extract events from queued URLs
-5. Generate a markdown report in the output directory
 
 ## File Structure
 

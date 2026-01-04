@@ -46,14 +46,14 @@ Run the local search agent to populate the queue with search results.
 
 ### 4. Execute URL Processing Sub-Agent
 
-Run the URL processor agent to extract events from queued URLs.
+Process each pending URL individually by passing URLs as parameters.
 
 **Constraints:**
 
-- You MUST use run_url_processor_agent tool with queue_file, events_file, interests, start_date, end_date
-- You MUST check the queue_file after each URL processor call to see if pending URLs remain
-- You MUST continue calling run_url_processor_agent until the "Pending URLs" section is empty
-- You MUST NOT stop based on number of events found - only stop when no pending URLs remain
+- You MUST read the queue_file to get the full list of pending URLs
+- You MUST call run_url_processor_agent for each pending URL individually
+- You MUST pass the specific URL along with queue_file, events_file, interests, start_date, end_date
+- You MUST continue until all pending URLs have been processed
 - You MUST capture only summary counts, not full event details
 
 ### 5. Compile Final Results

@@ -98,13 +98,14 @@ Please execute the local search process and return only the count of URLs added.
 
 @tool
 def run_url_processor_agent(
+    url: str,
     queue_file: str,
     events_file: str,
     interests: str,
     start_date: str,
     end_date: str,
 ) -> str:
-    """Run the URL processor sub-agent to extract events from queued URLs."""
+    """Run the URL processor sub-agent to extract events from a specific URL."""
 
     script_path = os.path.join(
         os.path.dirname(__file__), "..", "agent_scripts", "url-processor.script.md"
@@ -131,9 +132,10 @@ def run_url_processor_agent(
             tools=tools,
         )
 
-        prompt = f"""Process URLs from the queue and extract events.
+        prompt = f"""Process the provided URL and extract events.
 
 Parameters:
+- **url**: {url}
 - **queue_file**: {queue_file}
 - **events_file**: {events_file}
 - **interests**: {interests}
