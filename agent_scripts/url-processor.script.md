@@ -47,15 +47,16 @@ Extract content from the specified URL parameter.
 
 ### 4. Extract Event Information
 
-Parse content for event details and dates.
+Parse content for event details and dates, and identify additional URLs to process.
 
 **Constraints:**
 
 - You MUST look for specific event instances with actual dates
 - You MUST filter events to the specified start_date to end_date timeframe
 - You MUST extract title, date, time, location, description when available
-- You MUST detect pagination links and event detail pages
-- You MUST check new URLs against queue before adding
+- You MUST identify pagination links (containing "Next page", "Page 2", "More events", etc.)
+- You MUST identify event detail page links that may contain additional event information
+- You MUST check all discovered URLs against the entire queue_file (Pending, Processing, and Completed sections) to avoid duplicates
 
 ### 5. Filter and Score Events
 
@@ -70,12 +71,13 @@ Apply interest matching and relevance scoring.
 
 ### 6. Update Files
 
-Write discovered events and update queue status with error information if applicable.
+Write discovered events, add new URLs to queue, and update completion status.
 
 **Constraints:**
 
 - You MUST append new events to the existing events_file content
-- You MUST move the URL from "Processing URLs" to "Completed URLs" 
+- You MUST add any discovered pagination or event detail URLs to the "Pending URLs" section of the queue_file
+- You MUST move the processed URL from "Processing URLs" to "Completed URLs" 
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
 - You MUST include success status if no errors occurred (format: `- [x] URL_HERE (status: completed)`)
 - You MUST use filesystem tools to edit files
