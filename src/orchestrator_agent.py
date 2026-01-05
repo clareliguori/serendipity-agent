@@ -62,6 +62,7 @@ def main(parameters_file_arg=None, results_file_arg=None):
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
         model_id="claude-haiku-4-5-20251001",
         max_tokens=4096,
+        params={"temperature": 0},
     )
 
     # Use context manager for proper MCP lifecycle management

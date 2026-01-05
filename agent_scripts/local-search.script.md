@@ -13,7 +13,7 @@ As part of this agent, you perform targeted web searches for local events and ad
 - **queue_file** (required): Path to the URL queue file to update
 - **start_date** (required): Start date for event filtering
 - **end_date** (required): End date for event filtering
-- **max_urls_from_local_search** (required): Maximum number of most relevant URLs to add from local search
+- **max_urls_from_local_search** (required): Maximum total number of most relevant URLs to add from local search
 
 ## Steps
 
@@ -47,7 +47,7 @@ Perform web searches and collect relevant URLs.
 - You MUST use Brave search tools for comprehensive results
 - You MUST check each result URL against existing queue entries
 - You MUST only add new URLs not already in any queue section
-- You MUST select the most relevant URLs up to the max_urls_from_local_search limit
+- You MUST select the most relevant URLs up to the max_urls_from_local_search total limit across all interests
 - You MUST add URLs with format: `- [ ] URL_HERE (source: brave_search, query: "SEARCH_QUERY")`
 
 ### 4. Update Queue File

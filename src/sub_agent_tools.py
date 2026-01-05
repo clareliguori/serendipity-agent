@@ -66,6 +66,7 @@ def run_local_search_agent(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
         model_id="claude-haiku-4-5-20251001",
         max_tokens=4096,
+        params={"temperature": 0},
     )
 
     # Use context managers for proper MCP lifecycle management
@@ -121,6 +122,7 @@ def run_url_processor_agent(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
         model_id="claude-haiku-4-5-20251001",
         max_tokens=4096,
+        params={"temperature": 0},
     )
 
     # Use context managers for proper MCP lifecycle management
