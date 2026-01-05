@@ -68,7 +68,6 @@ Read extracted events and create the final formatted report.
 - You MUST create ONLY the results file using the provided results_file parameter if specified, otherwise use "serendipity-results-yyyy-mm-dd.md" format with current date
 - You MUST organize events chronologically by date
 - You MUST include summary statistics by interest category
-- You MUST clean up temporary files (url-queue.md, events-found.md)
 - You MUST NOT create any additional files beyond the single results file
 
 **Expected Report Format:**
