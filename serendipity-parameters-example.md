@@ -2,19 +2,18 @@
 
 ## Websites
 
-- https://seattlemag.com/calendar/
+- https://www.seattlesymphony.org/concerttickets/calendar
 - https://mmbotanicals.com/collections/floral-classes
 
 ## Interests
 
-- photography
-- cooking
-- woodworking
-- gardening
-- hiking
-- toastmasters
-- legos
+- classical music
+- flower arranging
 
 ## Local Area
 
 Seattle, WA
+
+## Max URLs from Local Search
+
+5

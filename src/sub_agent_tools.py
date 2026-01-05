@@ -40,7 +40,7 @@ def create_fetch_mcp():
 
 @tool
 def run_local_search_agent(
-    interests: str, local_area: str, queue_file: str, start_date: str, end_date: str
+    interests: str, local_area: str, queue_file: str, start_date: str, end_date: str, max_urls_from_local_search: int = 5
 ) -> str:
     """Run the local search sub-agent to find events and populate the URL queue."""
 
@@ -86,6 +86,7 @@ Parameters:
 - **queue_file**: {queue_file}
 - **start_date**: {start_date}
 - **end_date**: {end_date}
+- **max_urls_from_local_search**: {max_urls_from_local_search}
 
 Please execute the local search process and return only the count of URLs added."""
 

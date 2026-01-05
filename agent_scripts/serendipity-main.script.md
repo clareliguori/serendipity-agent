@@ -18,7 +18,7 @@ Read parameters and initialize the process.
 
 **Constraints:**
 
-- You MUST read the parameters_file to extract websites, interests, and local_area
+- You MUST read the parameters_file to extract websites, interests, local_area, and max_urls_from_local_search (default to 5 if not specified)
 - You MUST ensure the output_directory exists or create it
 - You MUST get current time and calculate start_date as current date and end_date as 2 months from now
 - You MUST create queue_file and events_file paths in output_directory
@@ -40,7 +40,7 @@ Run the local search agent to populate the queue with search results.
 
 **Constraints:**
 
-- You MUST use run_local_search_agent tool with interests, local_area, queue_file, start_date, and end_date
+- You MUST use run_local_search_agent tool with interests, local_area, queue_file, start_date, end_date, and max_urls_from_local_search
 - You MUST capture only the count result, not full output
 - You SHOULD retry once if the sub-agent fails
 

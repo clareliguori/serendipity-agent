@@ -45,6 +45,7 @@ Extract content from the specified URL parameter.
 - You MUST process the URL provided in the url parameter
 - You MUST use fetch tool to retrieve URL content
 - You MUST implement 1-2 second delays between requests
+- If you receive a 503 error, you MUST sleep for 2 seconds and retry exactly once
 - You MUST capture and store any fetch errors for inclusion in queue status
 
 ### 4. Extract Event Information
@@ -77,7 +78,8 @@ Write discovered events, add new URLs to queue, and update completion status.
 
 **Constraints:**
 
-- You MUST append new events to the existing events_file content
+- You MUST append new events to the existing events_file content ONLY if events were found
+- You MUST NOT modify the events_file if no events were discovered
 - You MUST add any discovered pagination or event detail URLs to the "Pending URLs" section of the queue_file
 - You MUST move the processed URL from "Processing URLs" to "Completed URLs"
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
