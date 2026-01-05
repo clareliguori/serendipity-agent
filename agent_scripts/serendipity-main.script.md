@@ -2,7 +2,7 @@
 
 ## Overview
 
-This script orchestrates the serendipity event finding process by coordinating sub-agents that handle specific tasks. It manages the overall workflow while delegating intensive operations to specialized agents to avoid context overflow.
+The serendipity agent finds events, classes, and workshops that match user interests by scanning websites and performing web searches. You orchestrate the overall workflow by coordinating specialized sub-agents that handle search and URL processing tasks.
 
 ## Parameters
 

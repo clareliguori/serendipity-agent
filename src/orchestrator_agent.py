@@ -88,8 +88,12 @@ Parameters:
 
 Please coordinate the sub-agents to find and compile interesting events."""
 
-        result = agent(initial_prompt)
-        print(result)
+        try:
+            result = agent(initial_prompt)
+            print(result)
+        except KeyboardInterrupt:
+            print("\nOperation cancelled by user")
+            return
 
 
 if __name__ == "__main__":

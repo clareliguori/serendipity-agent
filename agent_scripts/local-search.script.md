@@ -2,7 +2,9 @@
 
 ## Overview
 
-This agent performs targeted web searches for local events and adds relevant URLs to a processing queue file. It focuses on finding specific upcoming events with dates rather than general venues.
+The serendipity agent finds events, classes, and workshops that match user interests by scanning websites and performing web searches.
+
+As part of this agent, you perform targeted web searches for local events and add relevant URLs to the processing queue for the main workflow. You focus on finding specific upcoming events with dates rather than general venues.
 
 ## Parameters
 

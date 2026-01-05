@@ -2,7 +2,9 @@
 
 ## Overview
 
-This agent processes a single URL provided as a parameter, extracts event content, and writes discovered events to an events file.
+The serendipity agent finds events, classes, and workshops that match user interests by scanning websites and performing web searches.
+
+As part of this agent, you process an individual URL to extract event information.
 
 ## Parameters
 
@@ -77,7 +79,7 @@ Write discovered events, add new URLs to queue, and update completion status.
 
 - You MUST append new events to the existing events_file content
 - You MUST add any discovered pagination or event detail URLs to the "Pending URLs" section of the queue_file
-- You MUST move the processed URL from "Processing URLs" to "Completed URLs" 
+- You MUST move the processed URL from "Processing URLs" to "Completed URLs"
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
 - You MUST include success status if no errors occurred (format: `- [x] URL_HERE (status: completed)`)
 - You MUST use filesystem tools to edit files
