@@ -56,7 +56,7 @@ Parse content for event details and dates, and identify additional URLs to proce
 
 - You MUST look for specific event instances with actual dates
 - You MUST filter events to the specified start_date to end_date timeframe
-- You MUST extract title, date, time, location, description when available
+- You MUST extract title, date, time, location, organizer, description when available
 - You MUST identify pagination links (containing "Next page", "Page 2", "More events", etc.)
 - You MUST identify event detail page links that may contain additional event information
 - You MUST check all discovered URLs against the entire queue_file (Pending, Processing, and Completed sections) to avoid duplicates
@@ -80,7 +80,7 @@ Write discovered events, add new URLs to queue, and update completion status.
 
 - You MUST append new events to the existing events_file content ONLY if events were found
 - You MUST NOT modify the events_file if no events were discovered
-- You MUST add any discovered pagination or event detail URLs to the "Pending URLs" section of the queue_file
+- You MUST add any discovered pagination or event detail URLs that have not yet been fetched to the "Pending URLs" section of the queue_file, so that other URL processing agents can process them
 - You MUST move the processed URL from "Processing URLs" to "Completed URLs"
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
 - You MUST include success status if no errors occurred (format: `- [x] URL_HERE (status: completed)`)

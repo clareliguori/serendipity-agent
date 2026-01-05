@@ -65,7 +65,40 @@ Read extracted events and create the final formatted report.
 **Constraints:**
 
 - You MUST read the events_file to get all discovered events
-- You MUST create the results file using the provided results_file parameter if specified, otherwise use "serendipity-results-yyyy-mm-dd.md" format with current date
+- You MUST create ONLY the results file using the provided results_file parameter if specified, otherwise use "serendipity-results-yyyy-mm-dd.md" format with current date
 - You MUST organize events chronologically by date
 - You MUST include summary statistics by interest category
 - You MUST clean up temporary files (url-queue.md, events-found.md)
+- You MUST NOT create any additional files beyond the single results file
+
+**Expected Report Format:**
+```markdown
+# Serendipity Events - January 5, 2026
+
+## Parameters
+- Date Range: January 5, 2026 - March 5, 2026
+- Local Area: Seattle, WA
+- Interests: photography, cooking, hiking, woodworking
+
+## Summary
+- Total events found: 12
+- Photography: 3 events
+- Cooking: 5 events
+- Hiking: 4 events
+
+## Events by Date
+
+### January 15, 2026
+**Photography Workshop** - 2:00 PM
+Organizer: Seattle Photography Club
+Location: Community Center
+Description: Learn basic photography techniques...
+Source: https://seattlephoto.com/events
+
+### January 20, 2026
+**Cooking Class: Italian Cuisine** - 6:00 PM
+Organizer: Culinary Arts Institute
+Location: Culinary School
+Description: Hands-on pasta making class...
+Source: https://culinaryarts.edu/classes
+```
