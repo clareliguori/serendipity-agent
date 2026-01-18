@@ -3,7 +3,8 @@
 import os
 from strands.tools import tool
 from strands.agent import Agent
-from strands.models.anthropic import AnthropicModel
+from strands.models.litellm import LiteLLMModel
+from strands.types.content import SystemContentBlock
 from strands_tools import sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
@@ -53,10 +54,9 @@ def run_local_search_agent(
 
     filesystem_mcp = create_filesystem_mcp()
 
-    anthropic_model = AnthropicModel(
+    litellm_model = LiteLLMModel(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
-        model_id="claude-haiku-4-5-20251001",
-        max_tokens=4096,
+        model_id="anthropic/claude-haiku-4-5-20251001",
         params={"temperature": 0},
     )
 
@@ -66,7 +66,7 @@ def run_local_search_agent(
         agent = Agent(
             name="LocalSearchAgent",
             system_prompt=script_content,
-            model=anthropic_model,
+            model=litellm_model,
             tools=tools,
         )
 
@@ -108,10 +108,9 @@ def run_url_processor_agent(
 
     filesystem_mcp = create_filesystem_mcp()
 
-    anthropic_model = AnthropicModel(
+    litellm_model = LiteLLMModel(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
-        model_id="claude-haiku-4-5-20251001",
-        max_tokens=4096,
+        model_id="anthropic/claude-haiku-4-5-20251001",
         params={"temperature": 0},
     )
 
@@ -121,8 +120,11 @@ def run_url_processor_agent(
         tools = filesystem_mcp.list_tools_sync() + [sleep, browser.browser_fetch, fetch]
         agent = Agent(
             name="URLProcessorAgent",
-            system_prompt=script_content,
-            model=anthropic_model,
+            system_prompt=[
+                SystemContentBlock(text=script_content),
+                SystemContentBlock(cachePoint={"type": "default"}),
+            ],
+            model=litellm_model,
             tools=tools,
         )
 
