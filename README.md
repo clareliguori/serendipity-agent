@@ -73,6 +73,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ```bash
 pip install -r requirements.txt
+playwright install chromium
 ```
 
 ### 3. Configure Parameters
@@ -89,6 +90,11 @@ Edit `.env` file:
 BRAVE_API_KEY=your_brave_api_key_here
 PARAMETERS_FILE=./serendipity-parameters.md
 OUTPUT_DIRECTORY=./results
+```
+
+**Note:** If running in Docker, WSL, or other environments that require `--no-sandbox`, uncomment this line in `.env`:
+```bash
+PLAYWRIGHT_CHROMIUM_ARGS=--no-sandbox
 ```
 
 Copy and edit the example parameters file:

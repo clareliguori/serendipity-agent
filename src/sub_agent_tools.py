@@ -8,6 +8,7 @@ from strands_tools import sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
+from .serendipity_browser import SerendipityBrowser
 
 load_dotenv()
 
@@ -127,7 +128,8 @@ def run_url_processor_agent(
 
     # Use context managers for proper MCP lifecycle management
     with filesystem_mcp, fetch_mcp:
-        tools = filesystem_mcp.list_tools_sync() + fetch_mcp.list_tools_sync() + [sleep]
+        browser = SerendipityBrowser()
+        tools = filesystem_mcp.list_tools_sync() + fetch_mcp.list_tools_sync() + [sleep, browser.browser_fetch]
         agent = Agent(
             name="URLProcessorAgent",
             system_prompt=script_content,

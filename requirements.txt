@@ -1,5 +1,9 @@
 strands-agents[anthropic]>=1.19.0
-strands-agents-tools[local_chromium_browser]>=0.2.17
+strands-agents-tools>=0.2.17
 python-dotenv>=1.2.1
 mcp>=1.24.0
 mcp-server-fetch>=2025.4.7
+nest-asyncio>=1.5.0,<2.0.0
+playwright>=1.42.0,<2.0.0
+markdownify>=0.11.6
+readabilipy>=0.2.0
