@@ -3,7 +3,7 @@
 from strands.agent import Agent
 from strands.models.litellm import LiteLLMModel
 from strands.types.content import SystemContentBlock
-from strands_tools import current_time
+from strands_tools import current_time, sleep
 from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from .sub_agent_tools import run_local_search_agent, run_url_processor_agent
@@ -73,6 +73,7 @@ def main(parameters_file_arg=None, results_file_arg=None):
     with filesystem_mcp:
         tools = filesystem_mcp.list_tools_sync() + [
             current_time,
+            sleep,
             run_local_search_agent,
             run_url_processor_agent,
         ]

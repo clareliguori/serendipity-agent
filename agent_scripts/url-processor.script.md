@@ -23,11 +23,12 @@ Read current state of processing files.
 
 **Constraints:**
 
-- You MUST read the queue_file to track URL status and check for domain-level browser requirements
+- You MUST read the queue_file to track URL status and check for browser requirements
 - You MUST read the events_file to track discovered events
 - You MUST create files if they don't exist
+- You MUST check if the current URL entry in "Pending URLs" contains "(browser required)" or "(browser_required)"
 - You MUST check the "Completed URLs" section for any URLs from the same domain that include "(browser_required)" in their status
-- If any URL from the same domain has "(browser_required)", you MUST use browser_fetch for this URL without testing fetch first
+- If the current URL has "(browser required)" OR any URL from the same domain has "(browser_required)", you MUST use browser_fetch for this URL without testing fetch first
 
 ### 2. Move URL to Processing
 
@@ -68,20 +69,25 @@ Determine if the fetched content is sufficient or if browser_fetch is needed.
 **Constraints:**
 
 - Only execute if step 4 determined browser_fetch is needed
-- Call browser_fetch with url, wait_seconds=15, raw=True
+- Call browser_fetch with url, wait_seconds=15, raw=False to get markdown-converted content
 
 ### 5. Extract Event Information
 
-Parse content for event details and dates, and identify additional URLs to process.
+Parse content for event details, dates, and discover additional URLs.
 
 **Constraints:**
 
-- You MUST look for specific event instances with actual dates
+- You MUST extract events ONLY from the current URL's content that you already fetched in step 3
+- You MUST NOT call fetch or browser_fetch again in this step
+- You MUST NOT "click on links" or "get more details" by fetching additional pages
+- You MUST work with only the content you already have from step 3
+- You MUST look for specific event instances with actual dates in the existing content
 - You MUST filter events to the specified start_date to end_date timeframe
-- You MUST extract title, date, time, location, organizer, description when available
-- You MUST identify pagination links (containing "Next page", "Page 2", "More events", etc.)
-- You MUST identify event detail page links that may contain additional event information
+- You MUST extract title, date, time, location, organizer, description when available from the existing content
+- You MAY identify pagination links (containing "Next page", "Page 2", "More events", etc.) for adding to queue in step 7
+- You MAY identify event detail page links for adding to queue in step 7
 - You MUST check all discovered URLs against the entire queue_file (Pending, Processing, and Completed sections) to avoid duplicates
+- If event details are incomplete in the current content, you SHOULD note what information is missing but MUST NOT fetch more pages
 
 ### 6. Filter and Score Events
 
@@ -102,7 +108,8 @@ Write discovered events, add new URLs to queue, and update completion status.
 
 - You MUST append new events to the existing events_file content ONLY if events were found
 - You MUST NOT modify the events_file if no events were discovered
-- You MUST add any discovered pagination or event detail URLs that have not yet been fetched to the "Pending URLs" section of the queue_file, so that other URL processing agents can process them
+- You MUST add any discovered pagination or event detail URLs to the "Pending URLs" section of the queue_file WITHOUT fetching them
+- You MUST NOT fetch discovered URLs - only add them to the queue for future processing
 - You MUST move the processed URL from "Processing URLs" to "Completed URLs"
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
 - If you used browser_fetch because JavaScript was required, you MUST mark it as (format: `- [x] URL_HERE (status: completed, browser_required)`)
