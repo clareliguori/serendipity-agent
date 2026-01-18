@@ -56,8 +56,6 @@ class SerendipityBrowser:
     def browser_fetch(
         self,
         url: str,
-        max_length: int = 5000,
-        start_index: int = 0,
         raw: bool = False,
         wait_seconds: int = 10
     ) -> Dict[str, Any]:
@@ -68,17 +66,15 @@ class SerendipityBrowser:
         
         Args:
             url: URL to fetch
-            max_length: Maximum number of characters to return (default: 5000)
-            start_index: Start output at this character index (default: 0)
             raw: Get actual HTML content without simplification to markdown (default: False)
             wait_seconds: Seconds to wait after page load for JavaScript to execute (default: 10)
         
         Returns:
             Dict with status and content
         """
-        return self._execute_async(self._fetch(url, max_length, start_index, raw, wait_seconds))
+        return self._execute_async(self._fetch(url, raw, wait_seconds))
     
-    async def _fetch(self, url: str, max_length: int, start_index: int, raw: bool, wait_seconds: int) -> Dict[str, Any]:
+    async def _fetch(self, url: str, raw: bool, wait_seconds: int) -> Dict[str, Any]:
         """Fetch URL with browser."""
         browser = None
         try:
@@ -115,22 +111,6 @@ class SerendipityBrowser:
                 content = html
             else:
                 content = extract_content_from_html(html)
-            
-            # Handle pagination
-            original_length = len(content)
-            if start_index >= original_length:
-                content = "<error>No more content available.</error>"
-            else:
-                truncated_content = content[start_index : start_index + max_length]
-                if not truncated_content:
-                    content = "<error>No more content available.</error>"
-                else:
-                    content = truncated_content
-                    actual_content_length = len(truncated_content)
-                    remaining_content = original_length - (start_index + actual_content_length)
-                    if actual_content_length == max_length and remaining_content > 0:
-                        next_start = start_index + actual_content_length
-                        content += f"\n\n<error>Content truncated. Call browser_fetch with start_index={next_start} to get more content.</error>"
             
             return {
                 "status": "success",

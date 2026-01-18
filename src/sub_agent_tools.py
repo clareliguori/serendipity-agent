@@ -9,6 +9,7 @@ from strands.tools.mcp import MCPClient
 from mcp import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
 from .serendipity_browser import SerendipityBrowser
+from .fetch_tool import fetch
 
 load_dotenv()
 
@@ -23,17 +24,6 @@ def create_filesystem_mcp():
             StdioServerParameters(
                 command="npx",
                 args=["-y", "@modelcontextprotocol/server-filesystem", output_dir],
-            )
-        )
-    )
-
-def create_fetch_mcp():
-    """Create MCP fetch client."""
-    return MCPClient(
-        lambda: stdio_client(
-            StdioServerParameters(
-                command="python",
-                args=["-W", "ignore::RuntimeWarning:asyncio", "-m", "mcp_server_fetch"],
             )
         )
     )
@@ -117,7 +107,6 @@ def run_url_processor_agent(
         script_content = f.read()
 
     filesystem_mcp = create_filesystem_mcp()
-    fetch_mcp = create_fetch_mcp()
 
     anthropic_model = AnthropicModel(
         client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
@@ -127,9 +116,9 @@ def run_url_processor_agent(
     )
 
     # Use context managers for proper MCP lifecycle management
-    with filesystem_mcp, fetch_mcp:
+    with filesystem_mcp:
         browser = SerendipityBrowser()
-        tools = filesystem_mcp.list_tools_sync() + fetch_mcp.list_tools_sync() + [sleep, browser.browser_fetch]
+        tools = filesystem_mcp.list_tools_sync() + [sleep, browser.browser_fetch, fetch]
         agent = Agent(
             name="URLProcessorAgent",
             system_prompt=script_content,

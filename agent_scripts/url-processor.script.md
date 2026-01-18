@@ -44,13 +44,11 @@ Retrieve content from the URL using the fetch tool.
 
 **Constraints:**
 
-- You MUST process the URL provided in the url parameter
-- If the URL ends with `.json` or contains `/api/` in the path, you MUST use the fetch tool with raw=True to retrieve JSON data directly
-- Otherwise, you MUST use the fetch tool with max_length=50000
-- You MUST make exactly ONE fetch call
+- You MUST call fetch with the url parameter
+- For JSON APIs (URLs ending in `.json` or containing `/api/`), use convert_to_markdown=False
+- For HTML pages, use convert_to_markdown=True (default)
 - You MUST implement 1-2 second delays between requests
-- If you receive a 503 error, you MUST sleep for 2 seconds and retry exactly once
-- You MUST capture and store any fetch errors for inclusion in queue status
+- If you receive a 503 error, sleep for 2 seconds and retry once
 
 ### 4. Evaluate Fetch Results
 
@@ -58,26 +56,19 @@ Determine if the fetched content is sufficient or if browser_fetch is needed.
 
 **Constraints:**
 
-- You MUST examine the fetched content for event information (dates, times, titles, descriptions)
-- If the fetch returned ANY event information at all, you MUST proceed to step 5 (Extract Event Information)
-- If you need more content or raw HTML, you MUST use fetch again with different parameters (start_index for pagination, raw=True for HTML)
-- You MUST NOT use browser_fetch to get "more content" or "raw HTML" - use fetch with start_index or raw=True instead
-- You MUST only proceed to step 4b (Use Browser Fetch) if ALL of these conditions are true:
-  - Content is mostly empty (less than 500 characters of actual text)
-  - OR page shows "Please enable JavaScript" or similar messages
-  - OR content contains only loading placeholders or skeleton screens
-  - AND page has NO event information at all (no dates, no titles, no event names)
-- "Limited content", "partial results", or "need raw HTML" is NOT a reason to use browser_fetch
+- If fetch returned event information (dates, times, titles), proceed to step 5
+- If you need raw HTML, call fetch again with convert_to_markdown=False
+- Only use browser_fetch (step 4b) if fetch has NO event data AND shows JavaScript is required:
+  - Content is mostly empty (< 500 chars)
+  - "Please enable JavaScript" messages
+  - Only loading placeholders, no actual events
 
-### 4b. Use Browser Fetch (Only if Step 4 determined it's needed)
-
-Retrieve content using browser with JavaScript rendering.
+### 4b. Use Browser Fetch (Only if needed)
 
 **Constraints:**
 
-- You MUST only execute this step if step 4 determined browser_fetch is needed
-- You MUST use browser_fetch with wait_seconds=15, raw=True, max_length=200000
-- You MUST capture and store any browser errors for inclusion in queue status
+- Only execute if step 4 determined browser_fetch is needed
+- Call browser_fetch with url, wait_seconds=15, raw=True
 
 ### 5. Extract Event Information
 
