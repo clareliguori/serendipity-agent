@@ -23,9 +23,11 @@ Read current state of processing files.
 
 **Constraints:**
 
-- You MUST read the queue_file to track URL status
+- You MUST read the queue_file to track URL status and check for domain-level browser requirements
 - You MUST read the events_file to track discovered events
 - You MUST create files if they don't exist
+- You MUST check the "Completed URLs" section for any URLs from the same domain that include "(browser_required)" in their status
+- If any URL from the same domain has "(browser_required)", you MUST use browser_fetch for this URL without testing fetch first
 
 ### 2. Move URL to Processing
 
@@ -85,6 +87,7 @@ Write discovered events, add new URLs to queue, and update completion status.
 - You MUST add any discovered pagination or event detail URLs that have not yet been fetched to the "Pending URLs" section of the queue_file, so that other URL processing agents can process them
 - You MUST move the processed URL from "Processing URLs" to "Completed URLs"
 - You MUST include error information with the URL if fetch errors occurred (format: `- [x] URL_HERE (error: error_description)`)
-- You MUST include success status if no errors occurred (format: `- [x] URL_HERE (status: completed)`)
+- If you used browser_fetch because JavaScript was required, you MUST mark it as (format: `- [x] URL_HERE (status: completed, browser_required)`)
+- Otherwise you MUST include success status (format: `- [x] URL_HERE (status: completed)`)
 - You MUST use filesystem tools to edit files
 - You MUST return only a simple summary count, not full event details
