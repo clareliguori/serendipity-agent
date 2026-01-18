@@ -20,7 +20,7 @@ Read parameters and initialize the process.
 
 - You MUST read the parameters_file to extract websites, interests, local_area, and max_urls_from_local_search (default to 5 if not specified)
 - You MUST ensure the output_directory exists or create it
-- You MUST get current time and calculate start_date as current date and end_date as 2 months from now
+- You MUST get current time and calculate start_date as current date and end_date as 4 months from now
 - You MUST create queue_file and events_file paths in output_directory
 
 ### 2. Initialize Queue File
