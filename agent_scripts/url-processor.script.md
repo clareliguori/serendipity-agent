@@ -45,7 +45,8 @@ Extract content from the specified URL parameter.
 **Constraints:**
 
 - You MUST process the URL provided in the url parameter
-- You MUST first attempt to retrieve content using the fetch tool
+- If the URL ends with `.json` or contains `/api/` in the path, you MUST use the fetch tool with raw=True to retrieve JSON data directly
+- Otherwise, you MUST first attempt to retrieve content using the fetch tool
 - You MUST examine the fetched content for indicators that JavaScript is required to load event information
 - If JavaScript is needed, you MUST use the browser_fetch tool to retrieve content
 - You MUST implement 1-2 second delays between requests, made either with the fetch or browser_fetch tools
