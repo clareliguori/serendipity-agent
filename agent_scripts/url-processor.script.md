@@ -38,22 +38,48 @@ Update queue status before processing the URL.
 - You MUST move the provided URL from "Pending URLs" to "Processing URLs" section
 - You MUST update the queue_file with this status change
 
-### 3. Process the Provided URL
+### 3. Fetch URL Content
 
-Extract content from the specified URL parameter.
+Retrieve content from the URL using the fetch tool.
 
 **Constraints:**
 
 - You MUST process the URL provided in the url parameter
 - If the URL ends with `.json` or contains `/api/` in the path, you MUST use the fetch tool with raw=True to retrieve JSON data directly
-- Otherwise, you MUST first attempt to retrieve content using the fetch tool
-- You MUST examine the fetched content for indicators that JavaScript is required to load event information
-- If JavaScript is needed, you MUST use the browser_fetch tool to retrieve content
-- You MUST implement 1-2 second delays between requests, made either with the fetch or browser_fetch tools
+- Otherwise, you MUST use the fetch tool with max_length=50000
+- You MUST make exactly ONE fetch call
+- You MUST implement 1-2 second delays between requests
 - If you receive a 503 error, you MUST sleep for 2 seconds and retry exactly once
-- You MUST capture and store any fetch or browser errors for inclusion in queue status
+- You MUST capture and store any fetch errors for inclusion in queue status
 
-### 4. Extract Event Information
+### 4. Evaluate Fetch Results
+
+Determine if the fetched content is sufficient or if browser_fetch is needed.
+
+**Constraints:**
+
+- You MUST examine the fetched content for event information (dates, times, titles, descriptions)
+- If the fetch returned ANY event information at all, you MUST proceed to step 5 (Extract Event Information)
+- If you need more content or raw HTML, you MUST use fetch again with different parameters (start_index for pagination, raw=True for HTML)
+- You MUST NOT use browser_fetch to get "more content" or "raw HTML" - use fetch with start_index or raw=True instead
+- You MUST only proceed to step 4b (Use Browser Fetch) if ALL of these conditions are true:
+  - Content is mostly empty (less than 500 characters of actual text)
+  - OR page shows "Please enable JavaScript" or similar messages
+  - OR content contains only loading placeholders or skeleton screens
+  - AND page has NO event information at all (no dates, no titles, no event names)
+- "Limited content", "partial results", or "need raw HTML" is NOT a reason to use browser_fetch
+
+### 4b. Use Browser Fetch (Only if Step 4 determined it's needed)
+
+Retrieve content using browser with JavaScript rendering.
+
+**Constraints:**
+
+- You MUST only execute this step if step 4 determined browser_fetch is needed
+- You MUST use browser_fetch with wait_seconds=15, raw=True, max_length=200000
+- You MUST capture and store any browser errors for inclusion in queue status
+
+### 5. Extract Event Information
 
 Parse content for event details and dates, and identify additional URLs to process.
 
@@ -66,7 +92,7 @@ Parse content for event details and dates, and identify additional URLs to proce
 - You MUST identify event detail page links that may contain additional event information
 - You MUST check all discovered URLs against the entire queue_file (Pending, Processing, and Completed sections) to avoid duplicates
 
-### 5. Filter and Score Events
+### 6. Filter and Score Events
 
 Apply interest matching and relevance scoring.
 
@@ -77,7 +103,7 @@ Apply interest matching and relevance scoring.
 - You MUST assign relevance scores
 - You MUST only include moderate to high relevance events
 
-### 6. Update Files
+### 7. Update Files
 
 Write discovered events, add new URLs to queue, and update completion status.
 
