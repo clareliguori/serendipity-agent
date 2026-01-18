@@ -40,7 +40,8 @@ Run the local search agent to populate the queue with search results.
 
 **Constraints:**
 
-- You MUST use run_local_search_agent tool with interests, local_area, queue_file, start_date, end_date, and max_urls_from_local_search
+- If max_urls_from_local_search is 0, you MUST skip this step entirely
+- Otherwise, you MUST use run_local_search_agent tool with interests, local_area, queue_file, start_date, end_date, and max_urls_from_local_search
 - You MUST capture only the count result, not full output
 - You SHOULD retry once if the sub-agent fails
 
