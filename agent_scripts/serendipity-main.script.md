@@ -51,11 +51,11 @@ Process each pending URL one at a time sequentially, continuing until no pending
 
 **Constraints:**
 
-- You MUST sleep for 60 seconds before processing the first URL
+- You MUST sleep for 15 seconds before processing the first URL
 - You MUST read the queue_file to get the current list of pending URLs
 - You MUST call run_url_processor_agent for ONE URL at a time, never in parallel
 - You MUST wait for each URL processor to complete before starting the next one
-- You MUST sleep for 60 seconds between each URL processing call
+- You MUST sleep for 15 seconds between each URL processing call
 - You MUST pass the specific URL along with queue_file, events_file, interests, start_date, end_date
 - You MUST re-read the queue_file after each URL is processed to check for newly added URLs
 - You MUST continue this cycle until you confirm the queue_file has NO pending URLs remaining

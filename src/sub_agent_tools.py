@@ -3,7 +3,7 @@
 import os
 from strands.tools import tool
 from strands.agent import Agent
-from strands.models.litellm import LiteLLMModel
+from strands.models.bedrock import BedrockModel
 from strands.types.content import SystemContentBlock
 from strands_tools import sleep
 from strands.tools.mcp import MCPClient
@@ -11,9 +11,15 @@ from mcp import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
 from .serendipity_browser import SerendipityBrowser
 from .fetch_tool import fetch
+import boto3
 
 load_dotenv()
 
+# Create boto3 session with profile and region
+boto_session = boto3.Session(
+    region_name="us-west-2",
+    profile_name="personal"
+)
 
 def create_filesystem_mcp():
     """Create MCP filesystem client with allowed directories."""
@@ -54,10 +60,10 @@ def run_local_search_agent(
 
     filesystem_mcp = create_filesystem_mcp()
 
-    litellm_model = LiteLLMModel(
-        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
-        model_id="anthropic/claude-haiku-4-5-20251001",
-        params={"temperature": 0},
+    bedrock_model = BedrockModel(
+        boto_session=boto_session,
+        model_id="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+        temperature=0,
     )
 
     # Use context managers for proper MCP lifecycle management
@@ -66,7 +72,7 @@ def run_local_search_agent(
         agent = Agent(
             name="LocalSearchAgent",
             system_prompt=script_content,
-            model=litellm_model,
+            model=bedrock_model,
             tools=tools,
         )
 
@@ -95,6 +101,7 @@ def run_url_processor_agent(
     queue_file: str,
     events_file: str,
     interests: str,
+    local_area: str,
     start_date: str,
     end_date: str,
 ) -> str:
@@ -108,10 +115,10 @@ def run_url_processor_agent(
 
     filesystem_mcp = create_filesystem_mcp()
 
-    litellm_model = LiteLLMModel(
-        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
-        model_id="anthropic/claude-haiku-4-5-20251001",
-        params={"temperature": 0},
+    bedrock_model = BedrockModel(
+        boto_session=boto_session,
+        model_id="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+        temperature=0,
     )
 
     # Use context managers for proper MCP lifecycle management
@@ -124,7 +131,7 @@ def run_url_processor_agent(
                 SystemContentBlock(text=script_content),
                 SystemContentBlock(cachePoint={"type": "default"}),
             ],
-            model=litellm_model,
+            model=bedrock_model,
             tools=tools,
         )
 
@@ -135,6 +142,7 @@ Parameters:
 - **queue_file**: {queue_file}
 - **events_file**: {events_file}
 - **interests**: {interests}
+- **local_area**: {local_area}
 - **start_date**: {start_date}
 - **end_date**: {end_date}
 

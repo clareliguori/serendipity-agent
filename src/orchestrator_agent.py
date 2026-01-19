@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from strands.agent import Agent
-from strands.models.litellm import LiteLLMModel
+from strands.models.bedrock import BedrockModel
 from strands.types.content import SystemContentBlock
 from strands_tools import current_time, sleep
 from strands.tools.mcp import MCPClient
@@ -9,14 +9,17 @@ from mcp import stdio_client, StdioServerParameters
 from .sub_agent_tools import run_local_search_agent, run_url_processor_agent
 import os
 from dotenv import load_dotenv
-import nest_asyncio
+import boto3
 
 
 def main(parameters_file_arg=None, results_file_arg=None):
     load_dotenv()
     
-    # Enable nested event loops for sub-agents
-    nest_asyncio.apply()
+    # Create boto3 session with profile and region
+    boto_session = boto3.Session(
+        region_name="us-west-2",
+        profile_name="personal"
+    )
 
     parameters_file = parameters_file_arg or os.getenv("PARAMETERS_FILE")
     if not parameters_file:
@@ -63,10 +66,10 @@ def main(parameters_file_arg=None, results_file_arg=None):
     with open(script_path, "r") as f:
         script_content = f.read()
 
-    litellm_model = LiteLLMModel(
-        client_args={"api_key": os.getenv("ANTHROPIC_API_KEY")},
-        model_id="anthropic/claude-haiku-4-5-20251001",
-        params={"temperature": 0},
+    bedrock_model = BedrockModel(
+        model_id="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+        boto_session=boto_session,
+        temperature=0,
     )
 
     # Use context manager for proper MCP lifecycle management
@@ -84,7 +87,7 @@ def main(parameters_file_arg=None, results_file_arg=None):
                 SystemContentBlock(text=script_content),
                 SystemContentBlock(cachePoint={"type": "default"}),
             ],
-            model=litellm_model,
+            model=bedrock_model,
             tools=tools,
         )
 
