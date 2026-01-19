@@ -47,6 +47,9 @@ Perform web searches and collect relevant URLs.
 - You MUST use Brave search tools for comprehensive results
 - You MUST check each result URL against existing queue entries
 - You MUST only add new URLs not already in any queue section
+- You MUST prioritize direct event sources (venues, companies, organizations) over aggregator sites because aggregators often have incomplete information and require additional navigation
+- You MUST deprioritize or exclude aggregator sites like ClassBento, Bandsintown, Eventbrite, Meetup, Facebook Events since these sites typically require multiple clicks to reach actual event details
+- You SHOULD prefer official venue websites, company event pages, and organization calendars since these have complete event information directly accessible
 - You MUST select the most relevant URLs up to the max_urls_from_local_search total limit across all interests
 - You MUST add URLs with format: `- [ ] URL_HERE (source: brave_search, query: "SEARCH_QUERY")`
 

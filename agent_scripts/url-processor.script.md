@@ -83,6 +83,7 @@ Parse content for event details, dates, and discover additional URLs.
 - You MUST work with only the content you already have from step 3
 - You MUST look for specific event instances with actual dates in the existing content
 - You MUST filter events to the specified start_date to end_date timeframe
+- If the content contains events for many different locations (such as tour schedules or multi-city event listings), you MUST filter to include ONLY events in the local_area parameter because users are only interested in events they can attend locally
 - You MUST extract title, date, time, location, organizer, description when available from the existing content
 - You MAY identify pagination links (containing "Next page", "Page 2", "More events", etc.) for adding to queue in step 7
 - You MAY identify event detail page links for adding to queue in step 7
