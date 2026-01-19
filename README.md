@@ -76,7 +76,25 @@ pip install -r requirements.txt
 playwright install chromium
 ```
 
-### 3. Configure Parameters
+### 3. Configure AWS Credentials
+
+The agent uses Amazon Bedrock with Claude Haiku 4.5 (global cross-region inference). Configure AWS credentials:
+
+```bash
+aws configure --profile personal
+```
+
+Or set environment variables:
+
+```bash
+export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+export AWS_DEFAULT_REGION=us-west-2
+```
+
+**Note:** Ensure you have access to the `global.anthropic.claude-haiku-4-5-20251001-v1:0` model in Amazon Bedrock.
+
+### 4. Configure Parameters
 
 Copy and edit the environment file:
 
@@ -157,5 +175,5 @@ Results are saved as `serendipity-results-yyyy-mm-dd.md` with:
 ## Requirements
 
 - Python 3.10+
-- Node.js (for Brave MCP server)
+- AWS account with Amazon Bedrock access
 - Brave Search API key
