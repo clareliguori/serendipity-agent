@@ -48,12 +48,15 @@ def fetch(url: str, convert_to_markdown: bool = True) -> Dict[str, Any]:
     Returns:
         Dict with status and content
     """
-    # Call http_request tool with GET method
+    # Call http_request tool with GET method and User-Agent header
     # http_request expects a ToolUse dict with input
     tool_use = {
         "input": {
             "method": "GET",
             "url": url,
+            "headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            },
             "convert_to_markdown": convert_to_markdown
         }
     }
