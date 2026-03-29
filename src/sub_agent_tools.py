@@ -24,7 +24,7 @@ boto_session = boto3.Session(
 def create_filesystem_mcp():
     """Create MCP filesystem client with allowed directories."""
     # Sub-agents only need access to output directory
-    output_dir = os.path.abspath(os.getenv("OUTPUT_DIRECTORY", "./results"))
+    output_dir = os.path.abspath(os.path.expanduser(os.getenv("OUTPUT_DIRECTORY", "./results")))
 
     return MCPClient(
         lambda: stdio_client(

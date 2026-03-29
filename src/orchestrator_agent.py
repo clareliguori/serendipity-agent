@@ -27,7 +27,7 @@ def main(parameters_file_arg=None, results_file_arg=None):
             "Parameters file must be provided via command line argument or PARAMETERS_FILE environment variable"
         )
 
-    output_directory = os.getenv("OUTPUT_DIRECTORY", "./results")
+    output_directory = os.path.expanduser(os.getenv("OUTPUT_DIRECTORY", "./results"))
 
     # Get absolute paths for MCP filesystem server allowed directories
     abs_output_dir = os.path.abspath(output_directory)
