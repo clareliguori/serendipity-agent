@@ -31,8 +31,12 @@ Create the URL processing queue with provided websites.
 
 - You MUST create "url-queue.md" in output_directory
 - You MUST initialize with sections: "Pending URLs", "Processing URLs", "Completed URLs"
-- You MUST add all provided website URLs to "Pending URLs" section
-- You MUST use format: `- [ ] URL_HERE (source: provided_website)`
+- You MUST read and process each website URL entry from the parameters file, including any parenthetical annotations
+- For each URL, if the annotation mentions date parameters (e.g., "update the start_date", "update the date-related URL query parameters", "note the dateRange parameter"), you MUST modify the URL's date-related query parameters to use your computed start_date and end_date BEFORE adding it to the queue
+- You MUST preserve all non-date query parameters in the URL unchanged
+- You MUST preserve all annotation text (pagination notes, browser_required, rejection rules, etc.) when adding the URL to the queue
+- You MUST add processed URLs to "Pending URLs" section
+- You MUST use format: `- [ ] URL_HERE (source: provided_website)` followed by any relevant annotations like `(browser required)` or pagination notes
 
 ### 3. Execute Local Search Sub-Agent
 
