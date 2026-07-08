@@ -96,14 +96,14 @@ Read extracted events and create the final formatted report.
 
 ## Events by Date
 
-### January 15, 2026
+### Thursday, January 15, 2026
 **Photography Workshop** - 2:00 PM
 Organizer: Seattle Photography Club
 Location: Community Center
 Description: Learn basic photography techniques...
 Source: https://seattlephoto.com/events
 
-### January 20, 2026
+### Tuesday, January 20, 2026
 **Cooking Class: Italian Cuisine** - 6:00 PM
 Organizer: Culinary Arts Institute
 Location: Culinary School
