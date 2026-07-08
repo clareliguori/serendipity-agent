@@ -96,8 +96,10 @@ Apply interest matching and relevance scoring.
 
 **Constraints:**
 
-- You MUST compare events against provided interests
-- You MUST include related interests for broader matching
+- You MUST first check if the interests contain any exclusion rules (e.g., "DO NOT include events related to:", "NOT", "Reject all") and apply those exclusions BEFORE scoring
+- Events matching an exclusion rule MUST be rejected regardless of how well they match a positive interest
+- You MUST compare remaining events against provided positive interests
+- You MUST match events to specific interests, not just individual keywords from those interests. For example, "Pressing flowers and plants" means the craft of pressing flowers/plants — not all plant-related or gardening events
 - You MUST assign relevance scores
 - You MUST only include moderate to high relevance events
 

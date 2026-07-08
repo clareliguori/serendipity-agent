@@ -33,8 +33,8 @@ Create targeted search queries for each interest.
 
 **Constraints:**
 
-- You MUST search for each explicit interest combined with local_area and event terms
-- You MUST include related interests that logically connect to stated hobbies
+- You MUST first identify any exclusion rules in the interests (e.g., "DO NOT include events related to:", "NOT", "Reject all") and ensure your search queries do NOT target excluded topics
+- You MUST search for each explicit positive interest combined with local_area and event terms
 - You MUST use terms like "events", "classes", "workshops", "upcoming", "schedule"
 - You SHOULD prioritize official event websites and established platforms
 

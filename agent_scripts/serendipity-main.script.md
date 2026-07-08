@@ -19,6 +19,8 @@ Read parameters and initialize the process.
 **Constraints:**
 
 - You MUST read the parameters_file to extract websites, interests, local_area, and max_urls_from_local_search (default to 5 if not specified)
+- You MUST preserve the FULL text of the interests section exactly as written, including any exclusion rules (e.g., "DO NOT include events related to:") and any "Also looking for:" additions. Do NOT summarize, paraphrase, or shorten the interests — pass the complete original text to sub-agents
+- You MUST preserve the FULL text of the local_area section exactly as written, including any exclusion rules (e.g., "You MUST NOT include events in Seattle"). Do NOT summarize or shorten — pass the complete original text to sub-agents
 - You MUST ensure the output_directory exists or create it
 - You MUST get current time and calculate start_date as current date and end_date as 4 months from now
 - You MUST create queue_file and events_file paths in output_directory
